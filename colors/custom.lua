@@ -15,7 +15,8 @@ local mocha = {
    sapphire  = '#74c7ec',
    blue      = '#89b4fa',
    lavender  = '#b4befe',
-   text      = '#cdd6f4',
+   -- text      = '#cdd6f4',
+   text      = '#f5fbff',
    subtext1  = '#bac2de',
    subtext0  = '#a6adc8',
    overlay2  = '#9399b2',
@@ -81,7 +82,7 @@ local colorscheme = {
          italic = true,
       },
    },
-   visual_bell = mocha.text,
+   visual_bell = mocha.red,
    indexed = {
       [16] = mocha.peach,
       [17] = mocha.rosewater,

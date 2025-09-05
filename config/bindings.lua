@@ -2,6 +2,7 @@ local wezterm = require('wezterm')
 local platform = require('utils.platform')
 local backdrops = require('utils.backdrops')
 local act = wezterm.action
+local window_maximized = false
 
 local mod = {}
 
@@ -61,7 +62,7 @@ local keys = {
    -- tabs: spawn+close
    { key = 't',          mods = mod.SUPER,     action = act.SpawnTab('DefaultDomain') },
    { key = 't',          mods = mod.SUPER_REV, action = act.SpawnTab({ DomainName = 'WSL:Ubuntu' }) },
-   { key = 'w',          mods = mod.SUPER_REV, action = act.CloseCurrentTab({ confirm = false }) },
+   { key = 'u',          mods = mod.SUPER_REV, action = act.CloseCurrentTab({ confirm = false }) },
 
    -- tabs: navigation
    { key = '[',          mods = mod.SUPER,     action = act.ActivateTabRelative(-1) },
@@ -89,9 +90,10 @@ local keys = {
          if dimensions.is_full_screen then
             return
          end
-         local new_width = dimensions.pixel_width - 50
-         local new_height = dimensions.pixel_height - 50
-         window:set_inner_size(new_width, new_height)
+	 local step = 50
+         local new_width = dimensions.pixel_width - step
+         local new_height = dimensions.pixel_height - step
+         window:set_inner_size(new_width, new_height) 
       end)
    },
    {
@@ -102,11 +104,37 @@ local keys = {
          if dimensions.is_full_screen then
             return
          end
-         local new_width = dimensions.pixel_width + 50
-         local new_height = dimensions.pixel_height + 50
+	 local step = 50
+         local new_width = dimensions.pixel_width + step
+         local new_height = dimensions.pixel_height + step
          window:set_inner_size(new_width, new_height)
-      end)
+    end)
    },
+   --- {
+   ---    key = 'Enter',
+   ---    mods = mod.SUPER_REV,
+   ---    action = wezterm.action_callback(function(window, _pane)
+   ---       window:maximize()
+   ---    end)
+   --- },
+   {
+     key = 'Enter',
+     mods = mod.SUPER_REV,
+     action = wezterm.action_callback(function(window, _pane)
+        local dimensions = window:get_dimensions()
+        if dimensions.is_full_screen then
+           return
+        end
+  
+        if window_maximized then
+           window:restore()
+           window_maximized = false
+        else
+           window:maximize()
+           window_maximized = true
+        end
+     end)
+  },
    { key = '=', mods = 'CTRL', action = act.IncreaseFontSize },  
    { key = '-', mods = 'CTRL', action = act.DecreaseFontSize },  
    { key = '0', mods = 'CTRL', action = act.ResetFontSize },
@@ -173,7 +201,7 @@ local keys = {
 
    -- panes: zoom+close pane
    { key = 'Enter', mods = mod.SUPER,     action = act.TogglePaneZoomState },
-   { key = 'w',     mods = mod.SUPER,     action = act.CloseCurrentPane({ confirm = false }) },
+   { key = 'o',     mods = mod.SUPER,     action = act.CloseCurrentPane({ confirm = false }) },
 
    -- panes: navigation
    { key = 'k',     mods = mod.SUPER_REV, action = act.ActivatePaneDirection('Up') },
@@ -200,7 +228,7 @@ local keys = {
       action = act.ActivateKeyTable({
          name = 'resize_font',
          one_shot = false,
-         timemout_miliseconds = 1000,
+         timemout_milliseconds = 1000,
       }),
    },
    -- resize panes
@@ -210,7 +238,7 @@ local keys = {
       action = act.ActivateKeyTable({
          name = 'resize_pane',
          one_shot = false,
-         timemout_miliseconds = 1000,
+         timemout_milliseconds = 1000,
       }),
    },
 }
